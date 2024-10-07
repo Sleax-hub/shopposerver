@@ -1,0 +1,81 @@
+const  express = require('express');
+const bcrypt = require('bcryptjs');
+const Product = require('../model/ProductModel');
+
+// create product
+const createProduct =async(req, res)=>{
+    const {name, price, description, category} = req.body;
+    try{
+        // create a new product in the database
+        const product = await Product.create({
+            name,
+            price,
+            description,
+            category
+        })
+        res.status(200).json(product);
+        console.log(product);
+    } catch (error) {
+        console.log('product creating failed',error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+// get all products
+
+const getAllProducts = async(req, res)=>{
+    try{
+        const products = await Product.find();
+        res.status(200).json(products);
+    } catch (error) {
+        console.log('product getting failed',error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+// get single product
+
+const getProductById = async(req, res)=>{
+    const {id} = req.params;
+    try{
+        const product = await Product.findById(id);
+        if(!product){
+            return res.status(404).json({message: 'Product not found'});
+        }
+        res.status(200).json(product);
+    } catch (error) {
+        console.log('product getting failed',error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+// update product
+
+const updateProduct = async(req, res)=>{
+    const {id} = req.params;
+    const {name, price, description, category} = req.body;
+    try{
+        const updatedProduct = await Product.findByIdAndUpdate(id, {name, price, description, category}, {new: true});
+        if(!updatedProduct){
+            return res.status(404).json({message: 'Product not found'});
+        }
+        res.status(200).json(updatedProduct);
+    } catch (error) {
+        console.log('product updating failed',error);
+        res.status(500).json({message: error.message});
+    }
+}
+
+const greetPeople = async(req,res)=>{
+    const greeting = "Hello Users welcome to my app";
+    res.status(200).json(greeting);
+}
+
+
+module.exports = {
+    createProduct,
+    greetPeople,
+    getAllProducts,
+    getProductById,
+    updateProduct,
+ };
